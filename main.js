@@ -1,7 +1,10 @@
 import "./style.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { FontLoader } from "three/addons/loaders/FontLoader.js";
+import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+import celestialBodies from "./planets";
 
 // Scene Camera Renderer
 const scene = new THREE.Scene();
@@ -25,8 +28,8 @@ pointLight.position.set(20, 0, 5);
 scene.add(pointLight);
 
 // three js helper that shows where the light is located
-const lightHelper = new THREE.PointLightHelper(pointLight);
-const gridHelper = new THREE.GridHelper(200, 50);
+// const lightHelper = new THREE.PointLightHelper(pointLight);
+// const gridHelper = new THREE.GridHelper(200, 50);
 // scene.add(gridHelper, lightHelper);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -49,45 +52,59 @@ Array(200).fill().forEach(addStar);
 // const spaceTexture = new THREE.TextureLoader().load("space.png");
 // scene.background = spaceTexture;
 
-const sunTexture = new THREE.TextureLoader().load("sun.jpg");
-const sun = new THREE.Mesh(
-  new THREE.SphereGeometry(50, 100, 100),
-  new THREE.MeshBasicMaterial({
-    map: sunTexture,
-  })
-);
+function createRing(size, texture) {
+  const meshTexture = new THREE.TextureLoader().load(texture);
+  const ring = new THREE.Mesh(
+    new THREE.TorusGeometry(size[0], size[1], size[2], size[3]),
+    new THREE.MeshBasicMaterial({
+      map: meshTexture,
+    })
+  );
+  return ring;
+}
+
+function createPlanets(celestialBodies) {
+  const planets = {};
+  celestialBodies.forEach((body) => {
+    const planetTexture = new THREE.TextureLoader().load(body.texture);
+    const planetMesh = new THREE.Mesh(
+      new THREE.SphereGeometry(body.size[0], body.size[1], body.size[2]),
+      new THREE.MeshBasicMaterial({ map: planetTexture })
+    );
+    planets[body.name] = planetMesh;
+  });
+  return planets;
+}
+
+const {
+  sun,
+  mercury,
+  venus,
+  earth,
+  mars,
+  saturn,
+  jupiter,
+  neptune,
+  uranus,
+  pluto,
+} = createPlanets(celestialBodies);
+
 sun.position.set(0, 0, 0);
-scene.add(sun);
+const sunGroup = new THREE.Group();
+sunGroup.add(sun);
+scene.add(sunGroup);
 
-const mercuryTexture = new THREE.TextureLoader().load("mercury.jpg");
-const mercury = new THREE.Mesh(
-  new THREE.SphereGeometry(0.7, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: mercuryTexture,
-  })
-);
 mercury.position.set(60, 0, 0);
-scene.add(mercury);
+const mercuryGroup = new THREE.Group();
+mercuryGroup.add(mercury);
+scene.add(mercuryGroup);
 
-const venusTexture = new THREE.TextureLoader().load("venus.jpg");
-const venus = new THREE.Mesh(
-  new THREE.SphereGeometry(0.9, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: venusTexture,
-  })
-);
 venus.position.set(70, 0, 0);
-scene.add(venus);
+const venusGroup = new THREE.Group();
+venusGroup.add(venus);
+scene.add(venusGroup);
 
-const earthTexture = new THREE.TextureLoader().load("earth.jpg");
-const earth = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: earthTexture,
-  })
-);
 earth.position.set(80, 0, 0);
-
 const moonTexture = new THREE.TextureLoader().load("moon.jpg");
 const moon = new THREE.Mesh(
   new THREE.SphereGeometry(0.25, 100, 100),
@@ -101,41 +118,14 @@ const earthGroup = new THREE.Group();
 earthGroup.add(moon, earth);
 scene.add(earthGroup);
 
-const marsTexture = new THREE.TextureLoader().load("mars.jpg");
-const mars = new THREE.Mesh(
-  new THREE.SphereGeometry(0.7, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: marsTexture,
-  })
-);
 mars.position.set(90, 0, 0);
 scene.add(mars);
 
-const jupiterTexture = new THREE.TextureLoader().load("jupiter.jpg");
-const jupiter = new THREE.Mesh(
-  new THREE.SphereGeometry(2, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: jupiterTexture,
-  })
-);
 jupiter.position.set(100, 0, 0);
 scene.add(jupiter);
 
-const saturnTexture = new THREE.TextureLoader().load("saturn.jpg");
-const saturn = new THREE.Mesh(
-  new THREE.SphereGeometry(1.5, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: saturnTexture,
-  })
-);
 saturn.position.set(110, 0, 0);
-
-const saturnRing = new THREE.Mesh(
-  new THREE.TorusGeometry(4, 1, 2, 100),
-  new THREE.MeshBasicMaterial({
-    map: saturnTexture,
-  })
-);
+const saturnRing = createRing([4, 1, 2, 100], "saturn.jpg");
 saturnRing.position.set(110, 0, 0);
 saturnRing.rotation.x = Math.PI / 0.3;
 
@@ -143,21 +133,8 @@ const saturnGroup = new THREE.Group();
 saturnGroup.add(saturn, saturnRing);
 scene.add(saturnGroup);
 
-const uranusTexture = new THREE.TextureLoader().load("uranus.jpg");
-const uranus = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: uranusTexture,
-  })
-);
 uranus.position.set(120, 0, 0);
-
-const uranusRing = new THREE.Mesh(
-  new THREE.TorusGeometry(2, 0.1, 24, 18),
-  new THREE.MeshBasicMaterial({
-    map: uranusTexture,
-  })
-);
+const uranusRing = createRing([2, 0.1, 24, 18], "uranus.jpg");
 uranusRing.position.set(120, 0, 0);
 uranusRing.rotation.x = Math.PI / 1.8;
 
@@ -165,29 +142,46 @@ const uranusGroup = new THREE.Group();
 uranusGroup.add(uranus, uranusRing);
 scene.add(uranusGroup);
 
-const neptuneTexture = new THREE.TextureLoader().load("neptune.jpg");
-const neptune = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: neptuneTexture,
-  })
-);
 neptune.position.set(130, 0, 0);
 scene.add(neptune);
 
-const plutoTexture = new THREE.TextureLoader().load("pluto.jpg");
-const pluto = new THREE.Mesh(
-  new THREE.SphereGeometry(1, 600, 600),
-  new THREE.MeshBasicMaterial({
-    map: plutoTexture,
-  })
-);
 pluto.position.set(140, 0, 0);
 scene.add(pluto);
 
+function updateTextRotation(mesh) {
+  function update() {
+    mesh.lookAt(camera.position);
+    requestAnimationFrame(update);
+  }
+  update();
+}
+
+function createText(text, font) {
+  const textGeo = new TextGeometry("EARTH", {
+    font: font,
+    size: 2.5,
+    depth: 1,
+  });
+  const textMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffffff,
+    specular: 0xffffff,
+  });
+  const mesh = new THREE.Mesh(textGeo, textMaterial);
+  return mesh;
+}
+
+const loader = new FontLoader();
+loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
+  const earthLabel = createText("EARTH", font);
+  earthLabel.position.set(75, 20, 5);
+  earthGroup.add(earthLabel);
+  updateTextRotation(earthLabel);
+});
+
 function animate() {
-  requestAnimationFrame(animate);
   controls.update();
+  // updateTextRotation();
+  sun.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.0005);
   mercury.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.004);
   venus.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.002);
   earthGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.0001);
@@ -200,6 +194,7 @@ function animate() {
   uranusRing.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.0005);
   neptune.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.0000076479);
   pluto.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.00000248);
+  requestAnimationFrame(animate);
   renderer.render(scene, camera);
 }
 
