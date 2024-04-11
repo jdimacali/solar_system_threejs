@@ -95,13 +95,31 @@ sunGroup.add(sun);
 scene.add(sunGroup);
 
 mercury.position.set(60, 0, 0);
+const mercuryOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(60, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+mercuryOrbit.rotation.x = Math.PI / 2;
 const mercuryGroup = new THREE.Group();
-mercuryGroup.add(mercury);
+mercuryGroup.add(mercury, mercuryOrbit);
 scene.add(mercuryGroup);
 
 venus.position.set(70, 0, 0);
+const venusOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(70, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+venusOrbit.rotation.x = Math.PI / 2;
 const venusGroup = new THREE.Group();
-venusGroup.add(venus);
+venusGroup.add(venus, venusOrbit);
 scene.add(venusGroup);
 
 earth.position.set(80, 0, 0);
@@ -112,41 +130,113 @@ const moon = new THREE.Mesh(
     map: moonTexture,
   })
 );
+
 moon.position.set(80, 1.5, 1.5);
 
 const earthGroup = new THREE.Group();
-earthGroup.add(moon, earth);
+const earthOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(80, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+earthOrbit.rotation.x = Math.PI / 2;
+earthGroup.add(moon, earth, earthOrbit);
 scene.add(earthGroup);
 
 mars.position.set(90, 0, 0);
-scene.add(mars);
+const marsOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(90, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+marsOrbit.rotation.x = Math.PI / 2;
+const marsGroup = new THREE.Group();
+marsGroup.add(mars, marsOrbit);
+scene.add(marsGroup);
 
 jupiter.position.set(100, 0, 0);
-scene.add(jupiter);
+const jupterOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(100, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+jupterOrbit.rotation.x = Math.PI / 2;
+const jupiterGroup = new THREE.Group();
+jupiterGroup.add(jupiter, jupterOrbit);
+scene.add(jupiterGroup);
 
 saturn.position.set(110, 0, 0);
+const saturnOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(110, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+saturnOrbit.rotation.x = Math.PI / 2;
 const saturnRing = createRing([4, 1, 2, 100], "saturn.jpg");
 saturnRing.position.set(110, 0, 0);
 saturnRing.rotation.x = Math.PI / 0.3;
 
 const saturnGroup = new THREE.Group();
-saturnGroup.add(saturn, saturnRing);
+saturnGroup.add(saturn, saturnRing, saturnOrbit);
 scene.add(saturnGroup);
 
 uranus.position.set(120, 0, 0);
+const urnausOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(120, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+urnausOrbit.rotation.x = Math.PI / 2;
 const uranusRing = createRing([2, 0.1, 24, 18], "uranus.jpg");
 uranusRing.position.set(120, 0, 0);
 uranusRing.rotation.x = Math.PI / 1.8;
 
 const uranusGroup = new THREE.Group();
-uranusGroup.add(uranus, uranusRing);
+uranusGroup.add(uranus, uranusRing, urnausOrbit);
 scene.add(uranusGroup);
 
 neptune.position.set(130, 0, 0);
-scene.add(neptune);
+const neptuneOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(130, 0.1, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+neptuneOrbit.rotation.x = Math.PI / 2;
+const neptuneGroup = new THREE.Group();
+neptuneGroup.add(neptune, neptuneOrbit);
+scene.add(neptuneGroup);
 
 pluto.position.set(140, 0, 0);
-scene.add(pluto);
+const plutoOrbit = new THREE.Mesh(
+  new THREE.TorusGeometry(140, 0.05, 50, 50),
+  new THREE.MeshBasicMaterial({
+    color: "white",
+    transparent: true,
+    opacity: 0.5,
+  })
+);
+plutoOrbit.rotation.x = Math.PI / 2;
+const plutoGroup = new THREE.Group();
+plutoGroup.add(pluto, plutoOrbit);
+scene.add(plutoGroup);
 
 function updateTextRotation(mesh) {
   function update() {
@@ -157,9 +247,9 @@ function updateTextRotation(mesh) {
 }
 
 function createText(text, font) {
-  const textGeo = new TextGeometry("EARTH", {
+  const textGeo = new TextGeometry(text, {
     font: font,
-    size: 2.5,
+    size: 1,
     depth: 1,
   });
   const textMaterial = new THREE.MeshBasicMaterial({
@@ -173,27 +263,72 @@ function createText(text, font) {
 const loader = new FontLoader();
 loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
   const earthLabel = createText("EARTH", font);
-  earthLabel.position.set(75, 20, 5);
+  earthLabel.position.set(earth.position.x - 5, earth.position.y + 20, 0);
   earthGroup.add(earthLabel);
   updateTextRotation(earthLabel);
+
+  const sunLabel = createText("SUN", font);
+  sunLabel.position.set(sun.position.x - 5, sun.position.y + 60, 0);
+  sunGroup.add(sunLabel);
+  updateTextRotation(sunLabel);
+
+  const mercuryLabel = createText("MERCURY", font);
+  mercuryLabel.position.set(mercury.position.x - 5, mercury.position.y + 20, 0);
+  mercuryGroup.add(mercuryLabel);
+  updateTextRotation(mercuryLabel);
+
+  const venusLabel = createText("VENUS", font);
+  venusLabel.position.set(venus.position.x - 5, venus.position.y + 20, 0);
+  venusGroup.add(venusLabel);
+  updateTextRotation(venusLabel);
+
+  const marsLabel = createText("MARS", font);
+  marsLabel.position.set(mars.position.x - 5, mars.position.y + 20, 0);
+  marsGroup.add(marsLabel);
+  updateTextRotation(marsLabel);
+
+  const jupiterLabel = createText("JUPITER", font);
+  jupiterLabel.position.set(jupiter.position.x - 5, jupiter.position.y + 20, 0);
+  jupiterGroup.add(jupiterLabel);
+  updateTextRotation(jupiterLabel);
+
+  const saturnLabel = createText("SATURN", font);
+  saturnLabel.position.set(saturn.position.x - 5, saturn.position.y + 20, 0);
+  saturnGroup.add(saturnLabel);
+  updateTextRotation(saturnLabel);
+
+  const uranusLabel = createText("URANUS", font);
+  uranusLabel.position.set(uranus.position.x - 5, uranus.position.y + 20, 0);
+  uranusGroup.add(uranusLabel);
+  updateTextRotation(uranusLabel);
+
+  const neptuneLabel = createText("NEPTUNE", font);
+  neptuneLabel.position.set(neptune.position.x - 5, neptune.position.y + 20, 0);
+  neptuneGroup.add(neptuneLabel);
+  updateTextRotation(neptuneLabel);
+
+  const plutoLabel = createText("PLUTO", font);
+  plutoLabel.position.set(pluto.position.x - 5, pluto.position.y + 20, 0);
+  plutoGroup.add(plutoLabel);
+  updateTextRotation(plutoLabel);
 });
 
 function animate() {
   controls.update();
   // updateTextRotation();
   sun.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.0005);
-  mercury.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.004);
-  venus.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.002);
+  mercuryGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.004);
+  venusGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.002);
   earthGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.0001);
   moon.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.01);
-  mars.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.00006);
-  jupiter.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.0000186);
+  marsGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.00006);
+  jupiterGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.0000186);
   saturnRing.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.001);
   saturnGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.00001);
   uranusGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.000009);
   uranusRing.rotateOnAxis(new THREE.Vector3(0, 1, 0), 0.0005);
-  neptune.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.0000076479);
-  pluto.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), 0.00000248);
+  neptuneGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.0000076479);
+  plutoGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.00000248);
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 }
