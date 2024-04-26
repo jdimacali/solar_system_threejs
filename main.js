@@ -21,7 +21,7 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(window.innerWidth - 17, window.innerHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-camera.position.setZ(100);
+camera.position.set(157.5, 15, -50);
 
 const pointLight = new THREE.AmbientLight(0xffffff, 100);
 pointLight.position.set(20, 0, 5);
@@ -41,13 +41,13 @@ function addStar() {
 
   const [x, y, z] = Array(3)
     .fill()
-    .map(() => THREE.MathUtils.randFloatSpread(400));
+    .map(() => THREE.MathUtils.randFloatSpread(800));
 
   star.position.set(x, y, z);
   scene.add(star);
 }
 
-Array(200).fill().forEach(addStar);
+Array(300).fill().forEach(addStar);
 
 // const spaceTexture = new THREE.TextureLoader().load("space.png");
 // scene.background = spaceTexture;
@@ -313,9 +313,22 @@ loader.load("fonts/helvetiker_bold.typeface.json", function (font) {
   updateTextRotation(plutoLabel);
 });
 
+function updateCameraPosition() {
+  var radius = 165;
+  var speed = 0.00001;
+
+  // Calculate the new position of the camera in a circular path around the origin
+  var angle = Date.now() * speed; // Use time to create smooth motion
+  var x = Math.cos(angle) * radius;
+  var z = Math.sin(angle) * radius;
+
+  // Update the camera's position
+  camera.position.set(x, 25, z);
+}
+
 function animate() {
   controls.update();
-  // updateTextRotation();
+  updateCameraPosition();
   sun.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.0005);
   mercuryGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.004);
   venusGroup.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.002);
